@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ターゲット1900 タイピング暗記</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#e8eaec;
+    --paper-line:rgba(27,36,48,.055);
+    --card:#ffffff;
+    --ink:#1b2430;
+    --muted:#6b7480;
+    --faint:#a9b0b8;
+    --line:#d3d8db;
+    --red:#d1402a;
+    --red-dim:#f3d9d4;
+    --green:#2f7d5a;
+    --green-dim:#d9ece2;
+    --shadow: 0 1px 2px rgba(27,36,48,.06), 0 8px 24px rgba(27,36,48,.08);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    min-height:100%;
+    background:
+      repeating-linear-gradient(180deg, transparent 0 31px, var(--paper-line) 31px 32px),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:28px 16px 60px;
+  }
+  .mincho{font-family:'Shippori Mincho', serif;}
+  .mono{font-family:'JetBrains Mono', monospace;}
+
+  header.top{
+    width:100%;
+    max-width:640px;
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:22px;
+  }
+  header.top .logo{
+    font-family:'Shippori Mincho', serif;
+    font-weight:800;
+    font-size:22px;
+    letter-spacing:.03em;
+    position:relative;
+    display:inline-block;
+  }
+  header.top .logo em{
+    font-style:normal;
+    color:var(--red);
+  }
+  header.top .logo svg{
+    position:absolute;
+    left:0; bottom:-9px;
+    width:100%;
+    height:10px;
+  }
+  header.top .sub{
+    font-size:11.5px;
+    color:var(--muted);
+    letter-spacing:.06em;
+  }
+
+  .stage{
+    width:100%;
+    max-width:640px;
+  }
+  .screen{ display:none; }
+  .screen.active{ display:block; }
+
+  /* ---------- MENU SCREEN ---------- */
+  .menu-lead{
+    text-align:center;
+    margin-bottom:28px;
+  }
+  .menu-lead h1{
+    font-family:'Shippori Mincho', serif;
+    font-weight:700;
+    font-size:26px;
+    margin:0 0 10px;
+  }
+  .menu-lead p{
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.9;
+    margin:0;
+  }
+  .set-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
+  @media (max-width:520px){
+    .set-grid{ grid-template-columns:1fr; }
+  }
+  .set-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:22px 20px;
+    cursor:pointer;
+    box-shadow:var(--shadow);
+    text-align:left;
+    transition:transform .15s ease, box-shadow .15s ease;
+    position:relative;
+    overflow:hidden;
+  }
+  .set-card:hover{ transform:translateY(-3px); }
+  .set-card::before{
+    content:"";
+    position:absolute;
+    top:0; left:0;
+    width:5px; height:100%;
+    background:var(--red);
+  }
+  .set-card .tag{
+    font-size:11px;
+    letter-spacing:.12em;
+    color:var(--red);
+    font-weight:700;
+  }
+  .set-card h2{
+    font-family:'Shippori Mincho', serif;
+    font-size:22px;
+    margin:6px 0 10px;
+  }
+  .set-card .range{
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    color:var(--muted);
+    margin-bottom:10px;
+  }
+  .set-card .preview{
+    font-size:12.5px;
+    color:var(--faint);
+    line-height:1.7;
+  }
+  .status-line{
+    text-align:center;
+    color:var(--muted);
+    font-size:13px;
+    margin-top:22px;
+    min-height:18px;
+  }
+
+  /* ---------- GAME SCREEN ---------- */
+  .game-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:18px;
+  }
+  .progress{
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    color:var(--muted);
+    letter-spacing:.02em;
+  }
+  .progress b{ color:var(--ink); font-size:15px; }
+  .timer-wrap{
+    position:relative;
+    width:56px; height:56px;
+  }
+  .timer-wrap svg{ transform:rotate(-90deg); width:56px; height:56px; }
+  .timer-wrap circle.track{ fill:none; stroke:var(--line); stroke-width:4; }
+  .timer-wrap circle.ring{
+    fill:none; stroke:var(--red); stroke-width:4; stroke-linecap:round;
+    stroke-dasharray:175.9; stroke-dashoffset:0;
+  }
+  .timer-wrap .num{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace;
+    font-weight:700; font-size:17px;
+  }
+  .timer-wrap.warn .num{ color:var(--red); }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:6px;
+    box-shadow:var(--shadow);
+    padding:30px 28px 26px;
+    position:relative;
+    transition:background-color .25s ease;
+  }
+  .card.flash-correct{ background:var(--green-dim); }
+  .card.flash-wrong{ background:var(--red-dim); }
+
+  .mark{
+    position:absolute;
+    top:14px; right:20px;
+    font-family:'Shippori Mincho', serif;
+    font-size:44px;
+    font-weight:800;
+    color:var(--red);
+    opacity:0;
+    transform:scale(.6) rotate(-8deg);
+    transition:opacity .18s ease, transform .18s ease;
+    pointer-events:none;
+  }
+  .mark.show{ opacity:1; transform:scale(1) rotate(-8deg); }
+
+  .eyebrow{
+    font-size:11px;
+    letter-spacing:.14em;
+    color:var(--faint);
+    font-weight:700;
+    margin-bottom:8px;
+  }
+  .meaning{
+    font-family:'Shippori Mincho', serif;
+    font-size:27px;
+    font-weight:700;
+    line-height:1.55;
+    margin-bottom:22px;
+    min-height:1.55em;
+  }
+
+  .example-box{
+    border-top:1px dashed var(--line);
+    border-bottom:1px dashed var(--line);
+    padding:16px 0;
+    margin-bottom:22px;
+  }
+  .example-en{
+    font-family:'JetBrains Mono', monospace;
+    font-size:15px;
+    line-height:1.8;
+    margin-bottom:8px;
+  }
+  .example-en .blank{
+    display:inline-block;
+    min-width:70px;
+    border-bottom:2px solid var(--ink);
+    text-align:center;
+  }
+  .example-en .blank.filled{ color:var(--red); font-weight:700; border-color:var(--red); }
+  .example-ja{
+    font-size:13.5px;
+    color:var(--muted);
+    line-height:1.8;
+  }
+
+  .hint-row{
+    min-height:22px;
+    margin-bottom:10px;
+    font-size:12.5px;
+  }
+  .hint-btn{
+    background:none;
+    border:1px solid var(--faint);
+    color:var(--muted);
+    border-radius:20px;
+    font-size:11.5px;
+    padding:3px 12px;
+    cursor:pointer;
+  }
+  .hint-btn:hover{ border-color:var(--ink); color:var(--ink); }
+  .hint-text{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--red);
+    letter-spacing:.05em;
+  }
+
+  form.answer-form{
+    display:flex;
+    gap:10px;
+  }
+  input#answerInput{
+    flex:1;
+    font-family:'JetBrains Mono', monospace;
+    font-size:18px;
+    padding:12px 14px;
+    border:1.5px solid var(--ink);
+    border-radius:4px;
+    background:transparent;
+    color:var(--ink);
+    outline:none;
+  }
+  input#answerInput:focus{ border-color:var(--red); }
+  input#answerInput:disabled{ opacity:.5; }
+  button.submit-btn{
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-weight:700;
+    font-size:14px;
+    border:none;
+    background:var(--ink);
+    color:#fff;
+    padding:0 22px;
+    border-radius:4px;
+    cursor:pointer;
+  }
+  button.submit-btn:disabled{ opacity:.4; cursor:default; }
+
+  .explain{
+    margin-top:20px;
+    padding-top:18px;
+    border-top:1px solid var(--line);
+    display:none;
+  }
+  .explain.show{ display:block; }
+  .explain .answer-line{
+    font-size:13px;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+  .explain .answer-line b{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--ink);
+    font-size:17px;
+    margin-left:6px;
+  }
+  .explain .filled-sentence{
+    font-family:'JetBrains Mono', monospace;
+    font-size:14px;
+    margin:10px 0 12px;
+    line-height:1.7;
+  }
+  .explain .filled-sentence b{ color:var(--red); }
+  .explain .note{
+    font-size:13px;
+    line-height:1.8;
+    color:var(--ink);
+    background:#f6f3ec;
+    border-left:3px solid var(--red);
+    padding:10px 14px;
+    margin-bottom:16px;
+  }
+  .next-btn{
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-weight:700;
+    font-size:14px;
+    border:none;
+    background:var(--red);
+    color:#fff;
+    padding:10px 24px;
+    border-radius:4px;
+    cursor:pointer;
+  }
+
+  .quit-row{
+    text-align:center;
+    margin-top:16px;
+  }
+  .quit-row a{
+    color:var(--muted);
+    font-size:12.5px;
+    cursor:pointer;
+    text-decoration:underline;
+  }
+
+  /* ---------- RESULT SCREEN ---------- */
+  .result-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:6px;
+    box-shadow:var(--shadow);
+    padding:34px 28px;
+    text-align:center;
+  }
+  .result-card .score{
+    font-family:'Shippori Mincho', serif;
+    font-size:46px;
+    font-weight:800;
+  }
+  .result-card .score em{ color:var(--red); font-style:normal; }
+  .result-card .rate{
+    color:var(--muted);
+    font-size:14px;
+    margin:6px 0 26px;
+  }
+  .missed-list{
+    text-align:left;
+    max-height:260px;
+    overflow-y:auto;
+    border-top:1px solid var(--line);
+    padding-top:14px;
+    margin-bottom:24px;
+  }
+  .missed-list .empty{
+    text-align:center;
+    color:var(--muted);
+    font-size:13.5px;
+    padding:10px 0;
+  }
+  .missed-row{
+    display:flex;
+    justify-content:space-between;
+    gap:14px;
+    padding:7px 2px;
+    border-bottom:1px dashed var(--paper-line);
+    font-size:13.5px;
+  }
+  .missed-row .w{
+    font-family:'JetBrains Mono', monospace;
+    font-weight:700;
+    min-width:110px;
+  }
+  .missed-row .m{ color:var(--muted); flex:1; }
+  .result-buttons{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:center;
+  }
+  .result-buttons button{
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-weight:700;
+    font-size:13.5px;
+    border-radius:4px;
+    padding:10px 18px;
+    cursor:pointer;
+    border:1px solid var(--ink);
+    background:#fff;
+    color:var(--ink);
+  }
+  .result-buttons button.primary{
+    background:var(--red);
+    border-color:var(--red);
+    color:#fff;
+  }
+  .result-buttons button:disabled{
+    opacity:.35;
+    cursor:default;
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="logo">TARGET <em>1900</em>
+    <svg viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M2,6 Q25,2 50,6 T98,5" stroke="#d1402a" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
+  </div>
+  <div class="sub">タイピング暗記</div>
+</header>
+
+<div class="stage">
+
+  <!-- MENU -->
+  <section id="screen-menu" class="screen active">
+    <div class="menu-lead">
+      <h1>意味と例文を読んで、10秒以内に英単語を入力</h1>
+      <p>練習するセットを選んでください。1問ごとに答え合わせをします。<br>間違えると解説（類義語・注意点）が表示されます。</p>
+    </div>
+    <div class="set-grid" id="setGrid"></div>
+    <div class="status-line" id="statusLine">読み込み中...</div>
+  </section>
+
+  <!-- GAME -->
+  <section id="screen-game" class="screen">
+    <div class="game-top">
+      <div class="progress">問題 <b id="qIndex">1</b> / <span id="qTotal">50</span></div>
+      <div class="timer-wrap" id="timerWrap">
+        <svg viewBox="0 0 56 56">
+          <circle class="track" cx="28" cy="28" r="28"></circle>
+          <circle class="ring" id="ringEl" cx="28" cy="28" r="28"></circle>
+        </svg>
+        <div class="num" id="timerNum">10</div>
+      </div>
+    </div>
+
+    <div class="card" id="questionCard">
+      <div class="mark" id="markEl"></div>
+      <div class="eyebrow">意味</div>
+      <div class="meaning" id="meaningEl"></div>
+
+      <div class="example-box">
+        <div class="example-en" id="exampleEnEl"></div>
+        <div class="example-ja" id="exampleJaEl"></div>
+      </div>
+
+      <div class="hint-row">
+        <button type="button" class="hint-btn" id="hintBtn">💡 ヒント（頭文字）</button>
+        <span class="hint-text" id="hintText"></span>
+      </div>
+
+      <form class="answer-form" id="answerForm" autocomplete="off">
+        <input type="text" id="answerInput" placeholder="英単語を入力して Enter" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+        <button type="submit" class="submit-btn" id="submitBtn">答え合わせ</button>
+      </form>
+
+      <div class="explain" id="explainBox">
+        <div class="answer-line">正解 <b id="correctWordEl"></b></div>
+        <div class="filled-sentence" id="filledSentenceEl"></div>
+        <div class="note" id="noteEl"></div>
+        <button type="button" class="next-btn" id="nextBtn">次の問題へ</button>
+      </div>
+    </div>
+
+    <div class="quit-row"><a id="quitLink">やめてメニューに戻る</a></div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="screen-result" class="screen">
+    <div class="result-card">
+      <div class="score"><em id="resScore">0</em> / <span id="resTotal">50</span> 正解</div>
+      <div class="rate" id="resRate">正答率 0%</div>
+      <div class="missed-list" id="missedList"></div>
+      <div class="result-buttons">
+        <button class="primary" id="reviewBtn">間違えた単語だけ復習</button>
+        <button id="retryBtn">もう一度</button>
+        <button id="menuBtn">メニューに戻る</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var DATA_URL = "./target1900_words_set1-2.json";
+  var QUESTION_TIME = 10; // seconds
+
+  var wordsData = null;
+  var queue = [];
+  var idx = 0;
+  var score = 0;
+  var missed = [];        // list of word objects missed this round
+  var currentWord = null;
+  var answered = false;
+  var timerInterval = null;
+  var currentSetLabel = "";
+  var currentSetTotal = 0;
+  var isReviewMode = false;
+
+  var RING_CIRC = 175.9; // 2 * PI * 28
+
+  function $(id){ return document.getElementById(id); }
+
+  function showScreen(name){
+    ["menu","game","result"].forEach(function(n){
+      $("screen-"+n).classList.toggle("active", n === name);
+    });
+  }
+
+  function shuffle(arr){
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  // ---------- LOAD DATA ----------
+  fetch(DATA_URL)
+    .then(function(r){
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    })
+    .then(function(data){
+      wordsData = data;
+      buildMenu();
+      $("statusLine").textContent = "";
+    })
+    .catch(function(err){
+      $("statusLine").innerHTML =
+        "データファイル (" + DATA_URL + ") を読み込めませんでした。<br>" +
+        "同じフォルダに target1900_words_set1-2.json を置き、ローカルサーバー経由で開いてください。" +
+        "（例: ターミナルで <code>python3 -m http.server</code> を実行し、表示されたURLからアクセス）<br>" +
+        "<span style='color:#a9b0b8'>詳細: " + err.message + "</span>";
+    });
+
+  function buildMenu(){
+    var grid = $("setGrid");
+    grid.innerHTML = "";
+    Object.keys(wordsData.setInfo).forEach(function(key){
+      var info = wordsData.setInfo[key];
+      var wordsInSet = wordsData.words.filter(function(w){
+        return w.id >= info.start && w.id <= info.end;
+      });
+      var preview = wordsInSet.slice(0, 4).map(function(w){ return w.word; }).join(" / ") + " ...";
+
+      var card = document.createElement("div");
+      card.className = "set-card";
+      card.innerHTML =
+        "<div class='tag'>" + info.label.toUpperCase() + "</div>" +
+        "<h2>" + info.label + "</h2>" +
+        "<div class='range'>" + info.range + "</div>" +
+        "<div class='preview'>" + preview + "</div>";
+      card.addEventListener("click", function(){ startSet(wordsInSet, info.label); });
+      grid.appendChild(card);
+    });
+  }
+
+  // ---------- START / FLOW ----------
+  function startSet(wordList, label){
+    queue = shuffle(wordList);
+    idx = 0;
+    score = 0;
+    missed = [];
+    isReviewMode = false;
+    currentSetLabel = label;
+    currentSetTotal = queue.length;
+    $("qTotal").textContent = String(currentSetTotal);
+    showScreen("game");
+    nextQuestion();
+  }
+
+  function startReview(missedList){
+    queue = shuffle(missedList);
+    idx = 0;
+    score = 0;
+    missed = [];
+    isReviewMode = true;
+    currentSetTotal = queue.length;
+    $("qTotal").textContent = String(currentSetTotal);
+    showScreen("game");
+    nextQuestion();
+  }
+
+  function nextQuestion(){
+    if (idx >= queue.length){
+      renderResult();
+      showScreen("result");
+      return;
+    }
+    currentWord = queue[idx];
+    answered = false;
+    $("qIndex").textContent = String(idx + 1);
+    renderQuestion(currentWord);
+    startTimer();
+    $("answerInput").disabled = false;
+    $("answerInput").value = "";
+    $("answerInput").focus();
+  }
+
+  function renderQuestion(word){
+    $("questionCard").classList.remove("flash-correct", "flash-wrong");
+    $("markEl").className = "mark";
+    $("markEl").textContent = "";
+    $("meaningEl").textContent = word.meaning;
+
+    var parts = word.exampleEn.split("_____");
+    $("exampleEnEl").innerHTML =
+      escapeHtml(parts[0]) + "<span class='blank'>&nbsp;</span>" + escapeHtml(parts[1] || "");
+    $("exampleJaEl").textContent = word.exampleJa;
+
+    var hintBtn = $("hintBtn");
+    var hintText = $("hintText");
+    hintText.textContent = "";
+    if (word.hint){
+      hintBtn.style.display = "inline-block";
+      hintBtn.disabled = false;
+      hintBtn.onclick = function(){
+        hintText.textContent = word.hint + "…";
+        hintBtn.disabled = true;
+      };
+    } else {
+      hintBtn.style.display = "none";
+    }
+
+    $("explainBox").classList.remove("show");
+    $("submitBtn").disabled = false;
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>]/g, function(c){
+      return c === "&" ? "&amp;" : c === "<" ? "&lt;" : "&gt;";
+    });
+  }
+
+  // ---------- TIMER ----------
+  function startTimer(){
+    stopTimerVisualsOnly();
+    var timeLeft = QUESTION_TIME;
+    $("timerNum").textContent = String(timeLeft);
+    $("timerWrap").classList.remove("warn");
+
+    var ring = $("ringEl");
+    ring.style.transition = "none";
+    ring.style.strokeDashoffset = "0";
+    void ring.offsetWidth; // force reflow
+    ring.style.transition = "stroke-dashoffset " + QUESTION_TIME + "s linear";
+    ring.style.strokeDashoffset = String(RING_CIRC);
+
+    timerInterval = setInterval(function(){
+      timeLeft -= 1;
+      if (timeLeft <= 3 && timeLeft >= 0){
+        $("timerWrap").classList.add("warn");
+      }
+      if (timeLeft <= 0){
+        $("timerNum").textContent = "0";
+        clearInterval(timerInterval);
+        handleTimeout();
+        return;
+      }
+      $("timerNum").textContent = String(timeLeft);
+    }, 1000);
+  }
+
+  function stopTimerVisualsOnly(){
+    if (timerInterval) clearInterval(timerInterval);
+  }
+
+  function freezeRing(){
+    var ring = $("ringEl");
+    var computed = getComputedStyle(ring).strokeDashoffset;
+    ring.style.transition = "none";
+    ring.style.strokeDashoffset = computed;
+  }
+
+  // ---------- ANSWER HANDLING ----------
+  $("answerForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    if (answered) return;
+    checkAnswer($("answerInput").value);
+  });
+
+  function checkAnswer(raw){
+    var typed = raw.trim().toLowerCase();
+    var correct = typed.length > 0 && typed === currentWord.word.toLowerCase();
+    if (correct){
+      handleCorrect();
+    } else {
+      handleWrong();
+    }
+  }
+
+  function handleTimeout(){
+    if (answered) return;
+    handleWrong();
+  }
+
+  function handleCorrect(){
+    answered = true;
+    stopTimerVisualsOnly();
+    freezeRing();
+    score += 1;
+    $("answerInput").disabled = true;
+    $("submitBtn").disabled = true;
+    $("questionCard").classList.add("flash-correct");
+    var mark = $("markEl");
+    mark.textContent = "◯";
+    mark.classList.add("show");
+    setTimeout(function(){
+      idx += 1;
+      nextQuestion();
+    }, 650);
+  }
+
+  function handleWrong(){
+    answered = true;
+    stopTimerVisualsOnly();
+    freezeRing();
+    missed.push(currentWord);
+    $("answerInput").disabled = true;
+    $("submitBtn").disabled = true;
+    $("questionCard").classList.add("flash-wrong");
+    var mark = $("markEl");
+    mark.textContent = "✕";
+    mark.classList.add("show");
+
+    $("correctWordEl").textContent = currentWord.word;
+    var parts = currentWord.exampleEn.split("_____");
+    $("filledSentenceEl").innerHTML =
+      escapeHtml(parts[0]) + "<b>" + escapeHtml(currentWord.word) + "</b>" + escapeHtml(parts[1] || "");
+    var noteEl = $("noteEl");
+    if (currentWord.note){
+      noteEl.style.display = "block";
+      noteEl.textContent = currentWord.note;
+    } else {
+      noteEl.style.display = "none";
+    }
+    $("explainBox").classList.add("show");
+  }
+
+  $("nextBtn").addEventListener("click", function(){
+    idx += 1;
+    nextQuestion();
+  });
+
+  $("quitLink").addEventListener("click", function(){
+    stopTimerVisualsOnly();
+    showScreen("menu");
+  });
+
+  // ---------- RESULT ----------
+  function renderResult(){
+    $("resScore").textContent = String(score);
+    $("resTotal").textContent = String(currentSetTotal);
+    var rate = currentSetTotal > 0 ? Math.round((score / currentSetTotal) * 100) : 0;
+    $("resRate").textContent = "正答率 " + rate + "%";
+
+    var list = $("missedList");
+    list.innerHTML = "";
+    if (missed.length === 0){
+      list.innerHTML = "<div class='empty'>間違えた単語はありません。素晴らしいです！</div>";
+    } else {
+      missed.forEach(function(w){
+        var row = document.createElement("div");
+        row.className = "missed-row";
+        row.innerHTML =
+          "<div class='w'>" + escapeHtml(w.word) + "</div>" +
+          "<div class='m'>" + escapeHtml(w.meaning) + "</div>";
+        list.appendChild(row);
+      });
+    }
+    $("reviewBtn").disabled = missed.length === 0;
+  }
+
+  $("reviewBtn").addEventListener("click", function(){
+    if (missed.length === 0) return;
+    startReview(missed);
+  });
+  $("retryBtn").addEventListener("click", function(){
+    startSet(queue.length ? queue : [], currentSetLabel);
+  });
+  $("menuBtn").addEventListener("click", function(){
+    showScreen("menu");
+  });
+
+})();
+</script>
+</body>
+</html>
